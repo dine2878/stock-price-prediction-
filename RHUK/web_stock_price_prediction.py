@@ -9,12 +9,15 @@ from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime
 
 
+# ---------------- PAGE CONFIG ---------------- #
 
 st.set_page_config(
     page_title="Stock Market Price Prediction",
     layout="wide"
 )
 
+
+# ---------------- BACKGROUND FUNCTION ---------------- #
 
 def set_bg(image_url):
 
@@ -43,8 +46,6 @@ def set_bg(image_url):
         footer {{
             visibility: hidden;
         }}
-
-        /* SIDEBAR */
 
         section[data-testid="stSidebar"] {{
             background: rgba(0,0,0,0.92);
@@ -76,14 +77,10 @@ def set_bg(image_url):
             font-weight: bold !important;
         }}
 
-        /* WHITE TEXT */
-
         h1, h2, h3, h4, h5, h6,
         p, span, div {{
             color: white !important;
         }}
-
-        /* INPUT LABELS */
 
         label {{
             color: white !important;
@@ -91,50 +88,32 @@ def set_bg(image_url):
             font-weight: 700 !important;
         }}
 
-        /* INPUT BOX */
-
         .stTextInput > div > div > input {{
 
             height: 50px;
-
             border-radius: 12px;
-
             border: 1px solid #999;
-
             background: rgba(255,255,255,0.96);
-
             color: black !important;
-
             padding-left: 14px;
-
             font-size: 16px;
         }}
-
-        /* BUTTON */
 
         .stButton button {{
 
             width: 100%;
-
             height: 50px;
-
             border-radius: 12px;
-
             border: none;
-
             background: #144272;
-
             color: white;
-
             font-size: 18px;
-
             font-weight: bold;
         }}
 
         .stButton button:hover {{
 
             background: #205295;
-
             color: white;
         }}
 
@@ -147,6 +126,8 @@ def set_bg(image_url):
         unsafe_allow_html=True
     )
 
+
+# ---------------- DATABASE ---------------- #
 
 conn = sqlite3.connect(
     "users.db",
@@ -165,6 +146,8 @@ CREATE TABLE IF NOT EXISTS users (
 conn.commit()
 
 
+# ---------------- SESSION ---------------- #
+
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
@@ -172,199 +155,194 @@ if "user" not in st.session_state:
     st.session_state.user = ""
 
 
+# ---------------- LOGIN PAGE ---------------- #
+
 if not st.session_state.logged_in:
 
     set_bg(
         "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a"
     )
 
+    menu = st.sidebar.selectbox(
+        "Menu",
+        ["Login", "Signup"]
+    )
 
+    # ---------------- LOGIN ---------------- #
 
-menu = st.sidebar.selectbox(
-    "Menu",
-    ["Login", "Signup"]
-)
+    if menu == "Login":
 
-if menu == "Login" and not st.session_state.logged_in:
+        left, center, right = st.columns([1.5,1,1.5])
 
-    left, center, right = st.columns([1.5,1,1.5])
+        with center:
 
-    with center:
+            col1, col2, col3 = st.columns([1,1,1])
 
-        # LOGO
+            with col2:
 
-        col1, col2, col3 = st.columns([1,1,1])
+                st.image(
+                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                    width=140
+                )
 
-        with col2:
-
-            st.image(
-                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                width=140
-            )
-
-    
-
-        st.markdown(
-            """
-            <div style="
-                background:#144272;
-                padding:14px;
-                border-radius:14px;
-                margin-top:10px;
-                margin-bottom:25px;
-                text-align:center;
-            ">
-                <h2 style="
-                    color:white;
-                    margin:0;
-                    font-size:30px;
-                    font-weight:bold;
+            st.markdown(
+                """
+                <div style="
+                    background:#144272;
+                    padding:14px;
+                    border-radius:14px;
+                    margin-top:10px;
+                    margin-bottom:25px;
+                    text-align:center;
                 ">
-                    LOGIN
-                </h2>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        email = st.text_input(
-            "Email Address"
-        )
-
-        password = st.text_input(
-            "Password",
-            type="password"
-        )
-
-        remember = st.checkbox(
-            "Remember Me"
-        )
-
-        if st.button("LOGIN"):
-
-            cursor.execute(
-                "SELECT * FROM users WHERE email=? AND password=?",
-                (email, password)
+                    <h2 style="
+                        color:white;
+                        margin:0;
+                        font-size:30px;
+                        font-weight:bold;
+                    ">
+                        LOGIN
+                    </h2>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
-            user = cursor.fetchone()
-
-            if user:
-
-                st.session_state.logged_in = True
-                st.session_state.user = email
-
-                st.success(
-                    "Login Successful"
-                )
-
-                st.rerun()
-
-            else:
-
-                st.error(
-                    "Invalid Email or Password"
-                )
-
-
-
-if menu == "Signup" and not st.session_state.logged_in:
-
-    left, center, right = st.columns([1.5,1,1.5])
-
-    with center:
-
-        # LOGO
-
-        col1, col2, col3 = st.columns([1,1,1])
-
-        with col2:
-
-            st.image(
-                "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-                width=140
+            email = st.text_input(
+                "Email Address"
             )
 
-        
+            password = st.text_input(
+                "Password",
+                type="password"
+            )
 
-        st.markdown(
-            """
-            <div style="
-                background:#144272;
-                padding:14px;
-                border-radius:14px;
-                margin-top:10px;
-                margin-bottom:25px;
-                text-align:center;
-            ">
-                <h2 style="
-                    color:white;
-                    margin:0;
-                    font-size:26px;
-                    font-weight:bold;
-                ">
-                    CREATE ACCOUNT
-                </h2>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
+            remember = st.checkbox(
+                "Remember Me"
+            )
 
-        email = st.text_input(
-            "Email Address"
-        )
-
-        password = st.text_input(
-            "Password",
-            type="password"
-        )
-
-        confirm_password = st.text_input(
-            "Confirm Password",
-            type="password"
-        )
-
-        if st.button("CREATE ACCOUNT"):
-
-            if password != confirm_password:
-
-                st.error(
-                    "Passwords do not match"
-                )
-
-            else:
+            if st.button("LOGIN"):
 
                 cursor.execute(
-                    "SELECT * FROM users WHERE email=?",
-                    (email,)
+                    "SELECT * FROM users WHERE email=? AND password=?",
+                    (email, password)
                 )
 
                 user = cursor.fetchone()
 
                 if user:
 
+                    st.session_state.logged_in = True
+                    st.session_state.user = email
+
+                    st.success(
+                        "Login Successful"
+                    )
+
+                    st.rerun()
+
+                else:
+
                     st.error(
-                        "User already exists"
+                        "Invalid Email or Password"
+                    )
+
+    # ---------------- SIGNUP ---------------- #
+
+    if menu == "Signup":
+
+        left, center, right = st.columns([1.5,1,1.5])
+
+        with center:
+
+            col1, col2, col3 = st.columns([1,1,1])
+
+            with col2:
+
+                st.image(
+                    "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                    width=140
+                )
+
+            st.markdown(
+                """
+                <div style="
+                    background:#144272;
+                    padding:14px;
+                    border-radius:14px;
+                    margin-top:10px;
+                    margin-bottom:25px;
+                    text-align:center;
+                ">
+                    <h2 style="
+                        color:white;
+                        margin:0;
+                        font-size:26px;
+                        font-weight:bold;
+                    ">
+                        CREATE ACCOUNT
+                    </h2>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            email = st.text_input(
+                "Email Address"
+            )
+
+            password = st.text_input(
+                "Password",
+                type="password"
+            )
+
+            confirm_password = st.text_input(
+                "Confirm Password",
+                type="password"
+            )
+
+            if st.button("CREATE ACCOUNT"):
+
+                if password != confirm_password:
+
+                    st.error(
+                        "Passwords do not match"
                     )
 
                 else:
 
                     cursor.execute(
-                        "INSERT INTO users VALUES (?, ?)",
-                        (email, password)
+                        "SELECT * FROM users WHERE email=?",
+                        (email,)
                     )
 
-                    conn.commit()
+                    user = cursor.fetchone()
 
-                    st.success(
-                        "Account Created Successfully"
-                    )
+                    if user:
 
-                    st.info(
-                        "Now Login"
-                    )
+                        st.error(
+                            "User already exists"
+                        )
+
+                    else:
+
+                        cursor.execute(
+                            "INSERT INTO users VALUES (?, ?)",
+                            (email, password)
+                        )
+
+                        conn.commit()
+
+                        st.success(
+                            "Account Created Successfully"
+                        )
+
+                        st.info(
+                            "Now Login"
+                        )
 
 
+# ---------------- MAIN APP ---------------- #
 
 if st.session_state.logged_in:
 
@@ -383,14 +361,9 @@ if st.session_state.logged_in:
 
         st.rerun()
 
-    
-    
-
     st.title(
         "📊 Stock Market Price Prediction"
     )
-
-    
 
     col1, col2, col3 = st.columns([1,2,5])
 
@@ -401,8 +374,6 @@ if st.session_state.logged_in:
             "GOOG"
         )
 
-    
-
     end = datetime.now()
 
     start = datetime(
@@ -411,20 +382,39 @@ if st.session_state.logged_in:
         end.day
     )
 
+    # ---------------- STOCK DATA ---------------- #
 
     google_data = yf.download(
         stock,
-        start,
-        end
+        start=start,
+        end=end
     )
 
-    
+    if google_data.empty:
 
-    model = load_model(
-        "Lastest_stock_price_model.keras"
-    )
+        st.error(
+            "No stock data found."
+        )
 
-    
+        st.stop()
+
+    # ---------------- LOAD MODEL ---------------- #
+
+    try:
+
+        model = load_model(
+            "Lastest_stock_price_model.keras"
+        )
+
+    except Exception as e:
+
+        st.error(
+            f"Error loading model: {e}"
+        )
+
+        st.stop()
+
+    # ---------------- SHOW DATA ---------------- #
 
     st.subheader(
         "Stock Data"
@@ -434,7 +424,7 @@ if st.session_state.logged_in:
         google_data
     )
 
-    
+    # ---------------- MOVING AVERAGES ---------------- #
 
     google_data['MA_for_250_days'] = (
         google_data['Close']
@@ -454,7 +444,7 @@ if st.session_state.logged_in:
         .mean()
     )
 
-
+    # ---------------- GRAPH FUNCTION ---------------- #
 
     def plot_graph(
         figsize,
@@ -488,7 +478,7 @@ if st.session_state.logged_in:
 
         return fig
 
-   
+    # ---------------- GRAPHS ---------------- #
 
     st.subheader(
         'Close Price and MA250'
@@ -502,8 +492,6 @@ if st.session_state.logged_in:
         )
     )
 
-  
-
     st.subheader(
         'Close Price and MA200'
     )
@@ -516,7 +504,6 @@ if st.session_state.logged_in:
         )
     )
 
-
     st.subheader(
         'Close Price and MA100'
     )
@@ -528,8 +515,6 @@ if st.session_state.logged_in:
             google_data
         )
     )
-
-   
 
     st.subheader(
         'Close Price with MA100 & MA250'
@@ -545,7 +530,7 @@ if st.session_state.logged_in:
         )
     )
 
-  
+    # ---------------- PREPARE TEST DATA ---------------- #
 
     splitting_len = int(
         len(google_data) * 0.7
@@ -554,8 +539,6 @@ if st.session_state.logged_in:
     x_test = google_data[['Close']].iloc[
         splitting_len:
     ]
-
-
 
     scaler = MinMaxScaler(
         feature_range=(0, 1)
@@ -585,7 +568,15 @@ if st.session_state.logged_in:
 
     y_data = np.array(y_data)
 
- 
+    if len(x_data) == 0:
+
+        st.error(
+            "Not enough data for prediction."
+        )
+
+        st.stop()
+
+    # ---------------- PREDICTION ---------------- #
 
     predictions = model.predict(
         x_data
@@ -612,6 +603,8 @@ if st.session_state.logged_in:
         ]
     )
 
+    # ---------------- RESULT TABLE ---------------- #
+
     st.subheader(
         "Original vs Predicted Values"
     )
@@ -620,6 +613,7 @@ if st.session_state.logged_in:
         ploting_data
     )
 
+    # ---------------- FINAL GRAPH ---------------- #
 
     st.subheader(
         'Original vs Predicted Close Price'
